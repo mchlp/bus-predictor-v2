@@ -20,26 +20,30 @@ export default class Predictions extends Component {
 
     checkUpdate = async () => {
         let update = (Date.now() - this.state.lastUpdate) >= UPDATE_INTERVAL_MILLIS;
-        if (this.state.updating) {
-            await this.updatePredictions;
+        if (update) {
+            clearInterval(this.updateInterval);
+            await this.updatePredictions();
+            this.updateInterval = setInterval(this.checkUpdate, 1000);
+        } else {
+            this.setState((prevState) => ({
+                nextUpdatePercentElapsed: (Date.now() - prevState.lastUpdate) / UPDATE_INTERVAL_MILLIS
+            }));
         }
-        console.log(this.state);
-        this.setState((prevState) => ({
-            updating: update && !prevState.updating,
-            nextUpdatePercentElapsed: (Date.now() - prevState.lastUpdate) / UPDATE_INTERVAL_MILLIS
-        }));
     }
 
     updatePredictions = async () => {
-        clearInterval(this.updateInterval);
+        this.setState({
+            updating: true,
+            nextUpdatePercentElapsed: 1
+        });
         const data = (await Axios.get('/api/predict', { params: { stopId: this.props.stopId } })).data;
         const now = Date.now();
-        console.log(now);
         await this.setState({
             data: data.body.predictions[0],
-            lastUpdate: now
+            lastUpdate: now,
+            nextUpdatePercentElapsed: 0,
+            updating: false
         });
-        this.updateInterval = setInterval(this.checkUpdate, 1000);
     }
 
     componentDidUpdate(prevProps) {

@@ -1,0 +1,74 @@
+.full-height {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.full-height-child {
+    flex-grow: 1
+}
+
+.fill-height {
+    height: 100%;
+}
+
+.chat-contact-box {
+    background-color: white
+}
+
+.chat-contact-box:hover {
+    background-color: #d1d1d1;
+    cursor: pointer;
+}
+
+.chat-bubble-left {
+    position: relative;
+    background: #e2e2e2;
+    border-radius: .4em;
+    width: fit-content;
+}
+
+.chat-bubble-left:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-right-color: #e2e2e2;
+    border-left: 0;
+    margin-top: -8px;
+    margin-left: -8px;
+}
+
+.chat-bubble-right {
+    position: relative;
+    background: #e2e2e2;
+    border-radius: .4em;
+    width: fit-content;
+    float: right;
+}
+
+.chat-bubble-right:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-left-color: #e2e2e2;
+    border-right: 0;
+    margin-top: -8px;
+    margin-right: -8px;
+}
+
+.chat-grey-text {
+    color: grey;
+    font-size: 11px
+}
+
+.chat-sending-text {
+    color: #a7a7a7;
+}

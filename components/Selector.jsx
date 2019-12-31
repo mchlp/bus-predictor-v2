@@ -9,7 +9,8 @@ export default class Selector extends Component {
         super(props);
         this.state = {
             selected: 'byRoute',
-            selectedStop: null
+            selectedStop: null,
+            selectedStopName: null
         };
     }
 
@@ -19,9 +20,10 @@ export default class Selector extends Component {
         });
     }
 
-    selectStop = (stopId) => {
+    selectStop = (stopId, stopName) => {
         this.setState({
-            selectedStop: stopId
+            selectedStop: stopId,
+            selectedStopName: stopName
         });
     }
 
@@ -50,7 +52,7 @@ export default class Selector extends Component {
                 </div>
                 <div className='card mx-3 mb-3'>
                     <div className='card-body'>
-                        <Predictions stopId={this.state.selectedStop} />
+                        <Predictions stopId={this.state.selectedStop} stopName={this.state.selectedStopName} />
                     </div>
                 </div>
             </div>

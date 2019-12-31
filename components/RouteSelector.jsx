@@ -53,11 +53,12 @@ export default class RouteSelector extends Component {
     selectBranch = async (e) => {
         this.setState({
             selectedBranchIndex: e.target.value
-        });
-        this.selectStop({
-            target: {
-                value: this.state.branchInfo.stopObj[this.state.branchInfo.direction[this.state.selectedBranchIndex].stop[0]['$'].tag].stopId
-            }
+        }, () => {
+            this.selectStop({
+                target: {
+                    value: this.state.branchInfo.direction[this.state.selectedBranchIndex].stop[0]['$'].tag
+                }
+            });
         });
     }
 
@@ -65,7 +66,7 @@ export default class RouteSelector extends Component {
         this.setState({
             selectedStop: e.target.value
         });
-        this.props.selectStop(e.target.value);
+        this.props.selectStop(this.state.branchInfo.stopObj[e.target.value].stopId, this.state.branchInfo.stopObj[e.target.value].title);
     }
 
     render() {
@@ -106,10 +107,10 @@ export default class RouteSelector extends Component {
         const hasStoplist = this.state.branchInfo && (this.state.selectedBranchIndex !== null);
         let stopEleList;
         if (hasStoplist) {
-            stopEleList = this.state.branchInfo.direction[this.state.selectedBranchIndex].stop.map((stopId) => {
-                const stop = this.state.branchInfo.stopObj[stopId['$'].tag];
+            stopEleList = this.state.branchInfo.direction[this.state.selectedBranchIndex].stop.map((stopTag) => {
+                const stop = this.state.branchInfo.stopObj[stopTag['$'].tag];
                 return (
-                    <option key={stop.tag} value={stop.stopId}>{stop.title}</option>
+                    <option key={stop.tag} value={stop.tag} selected={this.state.selectedStop === stop.tag}>{stop.title}</option>
                 );
             });
         } else {

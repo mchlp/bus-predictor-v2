@@ -4,7 +4,7 @@ import Selector from '../components/Selector';
 
 const Home = () => (
     <PageWrapper>
-        <div className='container mt-5'>
+        <div className='container my-5'>
             <Selector />
         </div>
     </PageWrapper>

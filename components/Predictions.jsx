@@ -1,19 +1,45 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
 
+const UPDATE_INTERVAL_MILLIS = 5000;
+
 export default class Predictions extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: null
+            data: null,
+            lastUpdate: null,
+            nextUpdatePercentElapsed: null,
+            updating: false,
         };
     }
 
+    componentDidMount() {
+        this.updateInterval = setInterval(this.checkUpdate, 1000);
+    }
+
+    checkUpdate = async () => {
+        let update = (Date.now() - this.state.lastUpdate) >= UPDATE_INTERVAL_MILLIS;
+        if (this.state.updating) {
+            await this.updatePredictions;
+        }
+        console.log(this.state);
+        this.setState((prevState) => ({
+            updating: update && !prevState.updating,
+            nextUpdatePercentElapsed: (Date.now() - prevState.lastUpdate) / UPDATE_INTERVAL_MILLIS
+        }));
+    }
+
     updatePredictions = async () => {
+        clearInterval(this.updateInterval);
         const data = (await Axios.get('/api/predict', { params: { stopId: this.props.stopId } })).data;
-        this.setState({
-            data: data.body.predictions[0]
+        const now = Date.now();
+        console.log(now);
+        await this.setState({
+            data: data.body.predictions[0],
+            lastUpdate: now
         });
+        this.updateInterval = setInterval(this.checkUpdate, 1000);
     }
 
     componentDidUpdate(prevProps) {
@@ -25,31 +51,46 @@ export default class Predictions extends Component {
     render() {
         let content;
         if (this.props.stopId) {
+            let contentBody;
             if (this.state.data) {
                 if (this.state.data.direction) {
-                    content = this.state.data.direction.map((direction) => {
+                    contentBody = this.state.data.direction.map((direction) => {
                         console.log(direction);
                         const predictionContent = direction.prediction.map((predictionData) => {
                             const prediction = predictionData['$'];
                             console.log(prediction);
                             return (
-                                <div key={prediction.epochTime}>
-                                    Arriving in {Math.floor(prediction.seconds / 60)}:{prediction.seconds % 60}
-                                </div>
+                                <tr key={prediction.epochTime}>
+                                    <th scope='row'>{prediction.branch}</th>
+                                    <td>{prediction.vehicle}</td>
+                                    <td>{Math.floor(prediction.seconds / 60)} min {prediction.seconds % 60} sec</td>
+                                    <td>{(new Date(parseInt(prediction.epochTime))).toLocaleTimeString('en-CA')}</td>
+                                </tr>
                             );
                         });
                         return (
                             <div key={direction['$'].title}>
-                                <h4>{direction['$'].title}</h4>
-                                <div>
-                                    {predictionContent}
-                                </div>
-                            </div>
+                                <h5>{direction['$'].title}</h5>
+                                <div className='mt-3'>
+                                    <table className='table table-striped table-hover'>
+                                        <thead className='thead-dark'>
+                                            <tr>
+                                                <th scope='col'>Branch</th>
+                                                <th scope='col'>Bus Number</th>
+                                                <th scope='col'>Time to ETA</th>
+                                                <th scope='col'>ETA</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {predictionContent}
+                                        </tbody>
+                                    </table>
+                                </div >
+                            </div >
                         );
                     });
-
                 } else {
-                    content = (
+                    contentBody = (
                         <div>
                             No predictions avaliable for the selected stop.
                         </div>
@@ -57,12 +98,23 @@ export default class Predictions extends Component {
                 }
 
             } else {
-                content = (
+                contentBody = (
                     <div>
                         <h4>Loading Predictions...</h4>
                     </div>
                 );
             }
+            let progressString = this.state.updating ? 'Updating...' : (Math.max(0, (1 - this.state.nextUpdatePercentElapsed) * UPDATE_INTERVAL_MILLIS / 1000)).toFixed(0) + ' sec until next update';
+            content = (
+                <div>
+                    <h3>{this.props.stopName}</h3>
+                    <p>Stop Number: {this.props.stopId}</p>
+                    <div className='progress mb-3' style={{ height: '25px' }}>
+                        <div className={'progress-bar ' + (this.state.updating ? 'bg-info' : 'bg-success')} role='progressbar' style={{ width: (Math.min(100, this.state.nextUpdatePercentElapsed * 100)) + '%' }}>{progressString}</div>
+                    </div>
+                    {contentBody}
+                </div>
+            );
         } else {
             content = (
                 <div>

@@ -110,7 +110,7 @@ export default class RouteSelector extends Component {
             stopEleList = this.state.branchInfo.direction[this.state.selectedBranchIndex].stop.map((stopTag) => {
                 const stop = this.state.branchInfo.stopObj[stopTag['$'].tag];
                 return (
-                    <option key={stop.tag} value={stop.tag} selected={this.state.selectedStop === stop.tag}>{stop.title}</option>
+                    <option key={stop.tag} value={stop.tag}>{stop.title}</option>
                 );
             });
         } else {
@@ -128,22 +128,22 @@ export default class RouteSelector extends Component {
         return (
             <div>
                 <form>
-                    <div className="form-group">
-                        <label htmlFor="route-select">Route</label>
-                        <select id='route-select' className="custom-select" disabled={!hasRouteList} required onChange={this.selectRoute}>
+                    <div className='form-group'>
+                        <label htmlFor='route-select'>Route</label>
+                        <select id='route-select' className='custom-select' disabled={!hasRouteList} required onChange={this.selectRoute}>
                             {routeEleList}
                         </select>
 
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="branch-select">Branch</label>
-                        <select id='branch-select' className="custom-select" disabled={!hasBranchList} required onChange={this.selectBranch}>
+                    <div className='form-group'>
+                        <label htmlFor='branch-select'>Branch</label>
+                        <select id='branch-select' className='custom-select' disabled={!hasBranchList} required onChange={this.selectBranch}>
                             {branchEleList}
                         </select>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="stop-select">Stop</label>
-                        <select id='stop-select' className="custom-select" disabled={!hasStoplist} required onChange={this.selectStop}>
+                    <div className='form-group'>
+                        <label htmlFor='stop-select'>Stop</label>
+                        <select id='stop-select' className='custom-select' disabled={!hasStoplist} required onChange={this.selectStop} value={this.state.selectedStop ? this.state.selectedStop : ''}>
                             {stopEleList}
                         </select>
                     </div>

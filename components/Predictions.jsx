@@ -108,7 +108,7 @@ export default class Predictions extends Component {
                     </div>
                 );
             }
-            let progressString = this.state.updating ? 'Updating...' : (Math.max(0, (1 - this.state.nextUpdatePercentElapsed) * UPDATE_INTERVAL_MILLIS / 1000)).toFixed(0) + ' sec until next update';
+            let progressString = this.state.updating ? 'Updating...' : (Math.max(0, this.state.nextUpdatePercentElapsed * UPDATE_INTERVAL_MILLIS / 1000)).toFixed(0) + ' sec until next update';
             content = (
                 <div>
                     <h3>{this.props.stopName}</h3>

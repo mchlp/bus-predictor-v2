@@ -26,7 +26,7 @@ export default class Predictions extends Component {
             this.updateInterval = setInterval(this.checkUpdate, 1000);
         } else {
             this.setState((prevState) => ({
-                nextUpdatePercentElapsed: (Date.now() - prevState.lastUpdate) / UPDATE_INTERVAL_MILLIS
+                nextUpdatePercentElapsed: 1 - ((Date.now() - prevState.lastUpdate) / UPDATE_INTERVAL_MILLIS)
             }));
         }
     }
@@ -34,14 +34,14 @@ export default class Predictions extends Component {
     updatePredictions = async () => {
         this.setState({
             updating: true,
-            nextUpdatePercentElapsed: 1
+            nextUpdatePercentElapsed: 0
         });
         const data = (await Axios.get('/api/predict', { params: { stopId: this.props.stopId } })).data;
         const now = Date.now();
         await this.setState({
             data: data.body.predictions[0],
             lastUpdate: now,
-            nextUpdatePercentElapsed: 0,
+            nextUpdatePercentElapsed: 1,
             updating: false
         });
     }

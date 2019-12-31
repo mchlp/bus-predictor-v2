@@ -35,7 +35,7 @@ export default class Predictions extends Component {
     updatePredictions = async () => {
         this.setState({
             updating: true,
-            nextUpdatePercentElapsed: 0
+            nextUpdatePercentElapsed: 1
         });
         const data = (await Axios.get('/api/predict', { params: { stopId: this.props.stopId } })).data;
         const now = Date.now();
@@ -43,7 +43,6 @@ export default class Predictions extends Component {
             await this.setState({
                 error: data.body.Error,
                 lastUpdate: now,
-                nextUpdatePercentElapsed: 1,
                 updating: false
             });
         } else {
@@ -51,7 +50,6 @@ export default class Predictions extends Component {
                 error: null,
                 data: data.body.predictions[0],
                 lastUpdate: now,
-                nextUpdatePercentElapsed: 1,
                 updating: false
             });
         }

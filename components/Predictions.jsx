@@ -8,6 +8,7 @@ export default class Predictions extends Component {
         super(props);
         this.state = {
             data: null,
+            error: null,
             lastUpdate: null,
             nextUpdatePercentElapsed: null,
             updating: false,
@@ -38,12 +39,22 @@ export default class Predictions extends Component {
         });
         const data = (await Axios.get('/api/predict', { params: { stopId: this.props.stopId } })).data;
         const now = Date.now();
-        await this.setState({
-            data: data.body.predictions[0],
-            lastUpdate: now,
-            nextUpdatePercentElapsed: 1,
-            updating: false
-        });
+        if (data.body.Error) {
+            await this.setState({
+                error: data.body.Error,
+                lastUpdate: now,
+                nextUpdatePercentElapsed: 1,
+                updating: false
+            });
+        } else {
+            await this.setState({
+                error: null,
+                data: data.body.predictions[0],
+                lastUpdate: now,
+                nextUpdatePercentElapsed: 1,
+                updating: false
+            });
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -52,17 +63,25 @@ export default class Predictions extends Component {
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.updateInterval);
+    }
+
     render() {
         let content;
         if (this.props.stopId) {
             let contentBody;
-            if (this.state.data) {
+            if (this.state.error) {
+                contentBody = (
+                    <div>
+                        The Stop ID entered is not valid.
+                    </div>
+                );
+            } else if (this.state.data) {
                 if (this.state.data.direction) {
                     contentBody = this.state.data.direction.map((direction) => {
-                        console.log(direction);
                         const predictionContent = direction.prediction.map((predictionData) => {
                             const prediction = predictionData['$'];
-                            console.log(prediction);
                             return (
                                 <tr key={prediction.epochTime}>
                                     <th scope='row'>{prediction.branch}</th>

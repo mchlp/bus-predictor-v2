@@ -133,7 +133,6 @@ export default class RouteSelector extends Component {
                         <select id='route-select' className='custom-select' disabled={!hasRouteList} required onChange={this.selectRoute}>
                             {routeEleList}
                         </select>
-
                     </div>
                     <div className='form-group'>
                         <label htmlFor='branch-select'>Branch</label>

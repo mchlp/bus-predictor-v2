@@ -22,11 +22,6 @@ export default class RouteSelector extends Component {
         this.setState({
             routeList
         });
-        this.selectRoute({
-            target: {
-                value: routeList[0].tag
-            }
-        });
     }
 
     selectRoute = async (e) => {
@@ -40,33 +35,27 @@ export default class RouteSelector extends Component {
             stopObj[stop['$'].tag] = stop['$'];
         });
         branchInfo.stopObj = stopObj;
+        document.getElementById('branch-select').value = '0';
         this.setState({
-            branchInfo
-        });
-        this.selectBranch({
-            target: {
-                value: 0
-            }
+            branchInfo,
+            selectedBranchIndex: null
         });
     }
 
     selectBranch = async (e) => {
         this.setState({
-            selectedBranchIndex: e.target.value
-        }, () => {
-            this.selectStop({
-                target: {
-                    value: this.state.branchInfo.direction[this.state.selectedBranchIndex].stop[0]['$'].tag
-                }
-            });
+            selectedBranchIndex: e.target.value,
+            selectedStop: null
         });
+        document.getElementById('stop-select').value = '0';
     }
 
     selectStop = async (e) => {
         this.setState({
-            selectedStop: e.target.value
+            selectedStop: e.target.value,
+
         });
-        this.props.selectStop(this.state.branchInfo.stopObj[e.target.value].stopId, this.state.branchInfo.stopObj[e.target.value].title);
+        this.props.selectStop(this.state.branchInfo.stopObj[e.target.value].stopId);
     }
 
     render() {
@@ -78,6 +67,10 @@ export default class RouteSelector extends Component {
                     <option key={route.tag} value={route.tag}>{route.title}</option>
                 );
             });
+            routeEleList = [(
+                <option key={0} value={0} selected disabled hidden>Select a Route</option>),
+            ...routeEleList
+            ];
         } else {
             routeEleList = [
                 <option key='0'>Loading Routes...</option>
@@ -92,6 +85,10 @@ export default class RouteSelector extends Component {
                     <option key={branch['$'].tag} value={index}>{branch['$'].title}</option>
                 );
             });
+            branchEleList = [(
+                <option key={0} value={0} selected disabled hidden>Select a Branch</option>),
+            ...branchEleList
+            ];
         } else {
             if (this.state.selectedRoute) {
                 branchEleList = [
@@ -99,7 +96,7 @@ export default class RouteSelector extends Component {
                 ];
             } else {
                 branchEleList = [
-                    <option key='0'>Select a Route</option>
+                    <option key='0'>Select a Route First</option>
                 ];
             }
         }
@@ -113,6 +110,10 @@ export default class RouteSelector extends Component {
                     <option key={stop.tag} value={stop.tag}>{stop.title}</option>
                 );
             });
+            stopEleList = [(
+                <option key={0} value={0} selected disabled hidden>Select a Stop</option>),
+            ...stopEleList
+            ];
         } else {
             if (this.state.selectedBranchIndex) {
                 stopEleList = [
@@ -120,7 +121,7 @@ export default class RouteSelector extends Component {
                 ];
             } else {
                 stopEleList = [
-                    <option key='0'>Select a Branch</option>
+                    <option key='0'>Select a Branch First</option>
                 ];
             }
         }
@@ -142,7 +143,7 @@ export default class RouteSelector extends Component {
                     </div>
                     <div className='form-group'>
                         <label htmlFor='stop-select'>Stop</label>
-                        <select id='stop-select' className='custom-select' disabled={!hasStoplist} required onChange={this.selectStop} value={this.state.selectedStop ? this.state.selectedStop : ''}>
+                        <select id='stop-select' className='custom-select' disabled={!hasStoplist} required onChange={this.selectStop}>
                             {stopEleList}
                         </select>
                     </div>

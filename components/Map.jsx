@@ -21,12 +21,6 @@ export default class Map extends Component {
 
     componentDidMount() {
         this.map = L.map('map').setView(DEFAULT_CENTRE, DEFAULT_ZOOM);
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 18,
-            id: 'mapbox/streets-v11',
-            accessToken: 'pk.eyJ1IjoibWljaGFlbHB1IiwiYSI6ImNrNHVveWt2NjRjeHIza2xiNGt1c2F5OXkifQ.zpvAqpD5V7t5IqC9lfdeQg'
-        }).addTo(this.map);
     }
 
     componentDidUpdate(prevProps) {
@@ -97,6 +91,17 @@ export default class Map extends Component {
         this.setState({
             loading: true
         });
+
+        this.map.eachLayer((layer) => {
+            layer.removeLayer();
+        });
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            accessToken: 'pk.eyJ1IjoibWljaGFlbHB1IiwiYSI6ImNrNHVveWt2NjRjeHIza2xiNGt1c2F5OXkifQ.zpvAqpD5V7t5IqC9lfdeQg'
+        }).addTo(this.map);
 
         const stopIcon = L.icon({
             iconUrl: '/img/bus-station.png',

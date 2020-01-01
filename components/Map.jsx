@@ -15,7 +15,8 @@ export default class Map extends Component {
             loading: false,
             routeList: [],
         };
-        this.markerList = [];
+        this.vehicleMarkerList = [];
+        this.allMarkerLinesList = [];
 
     }
 
@@ -39,10 +40,10 @@ export default class Map extends Component {
 
     updateRouteVehicles = async () => {
         if (this.state.routeList.length) {
-            for (const marker of this.markerList) {
+            for (const marker of this.vehicleMarkerList) {
                 marker.remove();
             }
-            this.markerList = [];
+            this.vehicleMarkerList = [];
             for (const route of this.state.routeList) {
                 const northIcon = L.icon({
                     iconUrl: '/img/north.png',
@@ -80,7 +81,9 @@ export default class Map extends Component {
                         } else {
                             busIcon = westIcon;
                         }
-                        this.markerList.push(L.marker(busCoord, { icon: busIcon, title: busText }).addTo(this.map));
+                        const busMarker = L.marker(busCoord, { icon: busIcon, title: busText }).addTo(this.map);
+                        this.vehicleMarkerList.push(busMarker);
+                        this.allMarkerLinesList.push(busMarker);
                     }
                 }
             }
@@ -92,11 +95,11 @@ export default class Map extends Component {
             loading: true
         });
 
-        this.map.eachLayer((layer) => {
-            layer.removeLayer();
-        });
+        for (const marker of this.allMarkerLinesList) {
+            marker.remove();
+        }
 
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        this.layer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 18,
             id: 'mapbox/streets-v11',
@@ -126,10 +129,11 @@ export default class Map extends Component {
                         if (stop['$'].stopId == this.props.stopId) {
                             if (!stopCoord) {
                                 stopCoord = curStopCoord;
-                                L.marker(stopCoord, { title: stop['$'].title }).addTo(this.map);
+                                this.allMarkerLinesList.push(L.marker(stopCoord, { title: stop['$'].title }).addTo(this.map));
+
                             }
                         } else {
-                            L.marker(curStopCoord, { icon: stopIcon, title: stop['$'].title }).addTo(this.map);
+                            this.allMarkerLinesList.push(L.marker(curStopCoord, { icon: stopIcon, title: stop['$'].title }).addTo(this.map));
                         }
                     }
                     for (const routeLine of routeData.path) {
@@ -137,7 +141,7 @@ export default class Map extends Component {
                         for (const routePoint of routeLine.point) {
                             routeLinePointList.push([parseFloat(routePoint['$'].lat), parseFloat(routePoint['$'].lon)]);
                         }
-                        L.polyline(routeLinePointList, { color: '#' + routeData['$'].color }).addTo(this.map);
+                        this.allMarkerLinesList.push(L.polyline(routeLinePointList, { color: '#' + routeData['$'].color }).addTo(this.map));
                     }
                 }));
             }));

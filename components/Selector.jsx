@@ -3,6 +3,7 @@ import RouteSelector from './RouteSelector';
 import StopSelector from './StopSelector';
 import Predictions from './Predictions';
 import Map from './Map';
+import Router from 'next/router';
 
 export default class Selector extends Component {
 
@@ -10,7 +11,7 @@ export default class Selector extends Component {
         super(props);
         this.state = {
             selected: 'byRoute',
-            selectedStop: null,
+            selectedStop: props.stopId,
             inBrowser: false
         };
     }
@@ -28,6 +29,10 @@ export default class Selector extends Component {
     }
 
     selectStop = (stopId) => {
+        Router.push({
+            pathname: '/',
+            query: { stopId }
+        });
         this.setState({
             selectedStop: stopId,
         });

@@ -5,7 +5,7 @@ import Axios from 'axios';
 
 const DEFAULT_CENTRE = [43.653908, -79.384329];
 const DEFAULT_ZOOM = 15;
-const UPDATE_INTERVAL_MILLIS = 20000;
+const UPDATE_INTERVAL_MILLIS = 5000;
 
 export default class Map extends Component {
 
@@ -17,11 +17,14 @@ export default class Map extends Component {
         };
         this.vehicleMarkerList = [];
         this.allMarkerLinesList = [];
-
     }
 
     componentDidMount() {
+        this.updateInterval = setInterval(this.updateRouteVehicles, UPDATE_INTERVAL_MILLIS);
         this.map = L.map('map').setView(DEFAULT_CENTRE, DEFAULT_ZOOM);
+        if (this.props.stopId) {
+            this.updateMap();
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -30,8 +33,6 @@ export default class Map extends Component {
                 this.updateMap();
             }
         }
-
-        this.updateInterval = setInterval(this.updateRouteVehicles, UPDATE_INTERVAL_MILLIS);
     }
 
     componentWillUnmount() {

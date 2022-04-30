@@ -5,7 +5,7 @@ const agency = 'ttc';
 
 export default async (req, res) => {
     if (req.method === 'GET') {
-        const data = (await Axios.get('http://webservices.nextbus.com/service/publicXMLFeed', {
+        const data = (await Axios.get('https://retro.umoiq.com/service/publicXMLFeed', {
             params: {
                 command: 'routeList',
                 a: agency
